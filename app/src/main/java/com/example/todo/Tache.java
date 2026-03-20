@@ -2,7 +2,7 @@ package com.example.todo;
 
 import java.util.Date;
 
-public class tache {
+public class Tache {
 
     private String intitule ;
     private String description;
@@ -13,9 +13,7 @@ public class tache {
     private int status;
     private String contexte;
 
-    private int feal;
-
-    public tache (String intitule, String desc, float duree, Date dateDebut, Date dateFin, int status, String contexte){
+    public Tache(String intitule, String desc, float duree, Date dateDebut, Date dateFin, int status, String contexte){
         this.intitule = intitule;
         this.description = desc;
         this.duree = duree;
