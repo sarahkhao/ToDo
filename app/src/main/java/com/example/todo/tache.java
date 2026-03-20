@@ -13,6 +13,8 @@ public class tache {
     private int status;
     private String contexte;
 
+    private int feal;
+
     public tache (String intitule, String desc, float duree, Date dateDebut, Date dateFin, int status, String contexte){
         this.intitule = intitule;
         this.description = desc;
