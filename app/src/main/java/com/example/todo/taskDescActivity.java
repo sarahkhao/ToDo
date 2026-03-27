@@ -23,6 +23,7 @@ public class taskDescActivity extends AppCompatActivity {
         TextView txtDesc = findViewById(R.id.txtDescriptionDesc);
         EditText editLienWeb = findViewById(R.id.editLienWeb);
         Button btnOuvrirLien = findViewById(R.id.btnOuvrirLien);
+        Button btnRetour = findViewById(R.id.btnRetour);
 
         // 2. Récupération de la tâche envoyée par taskListActivity
         Tache tache = (Tache) getIntent().getSerializableExtra("TACHE_SELECTIONNEE");
@@ -51,6 +52,10 @@ public class taskDescActivity extends AppCompatActivity {
                 intent.putExtra("URL_WEB", url);
                 startActivity(intent);
             }
+        });
+
+        btnRetour.setOnClickListener(v -> {
+            finish(); // Cette méthode ferme l'activité actuelle et revient à la précédente
         });
     }
 }

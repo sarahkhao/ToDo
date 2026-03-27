@@ -75,5 +75,13 @@
             android:layout_marginTop="16dp"
             android:text="Ouvrir le lien" />
 
+        <Button
+            android:id="@+id/btnRetour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Retour"
+            android:backgroundTint="#9E9E9E" />
+
     </LinearLayout>
 </ScrollView>

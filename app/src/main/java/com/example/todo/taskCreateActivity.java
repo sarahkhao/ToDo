@@ -27,6 +27,7 @@ public class taskCreateActivity extends AppCompatActivity {
         EditText editLienWeb = findViewById(R.id.editLienWebCreate);
         Spinner spinnerStatus = findViewById(R.id.spinnerStatus);
         Button btnSauvegarder = findViewById(R.id.btnSauvegarder);
+        Button btnAnnuler = findViewById(R.id.btnAnnuler);
 
         // Configuration du Spinner des statuts
         String[] statuts = {"Pas commencée", "En cours", "Terminée"};
@@ -55,6 +56,10 @@ public class taskCreateActivity extends AppCompatActivity {
             resultIntent.putExtra("NOUVELLE_TACHE", laTache);
             setResult(RESULT_OK, resultIntent);
             finish();
+        });
+
+        btnAnnuler.setOnClickListener(v -> {
+            finish(); // Cette méthode ferme l'activité actuelle et revient à la précédente
         });
     }
 
