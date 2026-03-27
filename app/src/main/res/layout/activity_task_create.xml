@@ -15,10 +15,22 @@
         <EditText android:id="@+id/editIntitule" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Intitulé" />
         <EditText android:id="@+id/editDesc" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Description" />
         <EditText android:id="@+id/editContexte" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Contexte" />
-        <EditText android:id="@+id/editDateDebut" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Date début (ex: 12/02/2024)" />
-        <EditText android:id="@+id/editDateFin" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Date fin (ex: 15/02/2024)" />
         <EditText android:id="@+id/editLienWebCreate" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Lien Web (Optionnel)" android:inputType="textUri"/>
+        <EditText
+            android:id="@+id/editDateDebut"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date de début"
+            android:focusable="false"
+            android:inputType="none"/>
 
+        <EditText
+            android:id="@+id/editDateFin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date de fin"
+            android:focusable="false"
+            android:inputType="none"/>
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Statut :" android:layout_marginTop="8dp"/>
         <Spinner android:id="@+id/spinnerStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp"/>
 

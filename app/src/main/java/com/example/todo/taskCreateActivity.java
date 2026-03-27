@@ -1,5 +1,6 @@
 package com.example.todo;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -7,6 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 public class taskCreateActivity extends AppCompatActivity {
 
@@ -29,8 +33,11 @@ public class taskCreateActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, statuts);
         spinnerStatus.setAdapter(adapter);
 
+        // --- GESTION DES CLICS SUR LES DATES ---
+        editDateDebut.setOnClickListener(v -> afficherCalendrier(editDateDebut));
+        editDateFin.setOnClickListener(v -> afficherCalendrier(editDateFin));
+
         btnSauvegarder.setOnClickListener(v -> {
-            // Récupération de l'index du spinner (0, 1 ou 2) qui correspond parfaitement à notre logique de statut int
             int status = spinnerStatus.getSelectedItemPosition();
 
             Tache laTache = new Tache(
@@ -49,5 +56,26 @@ public class taskCreateActivity extends AppCompatActivity {
             setResult(RESULT_OK, resultIntent);
             finish();
         });
+    }
+
+    // --- NOUVELLE METHODE POUR LE CALENDRIER ---
+    private void afficherCalendrier(final EditText editText) {
+        // On récupère la date d'aujourd'hui pour ouvrir le calendrier sur le bon jour
+        final Calendar calendrier = Calendar.getInstance();
+        int annee = calendrier.get(Calendar.YEAR);
+        int mois = calendrier.get(Calendar.MONTH);
+        int jour = calendrier.get(Calendar.DAY_OF_MONTH);
+
+        // Création de la boîte de dialogue du calendrier
+        DatePickerDialog datePickerDialog = new DatePickerDialog(taskCreateActivity.this,
+                (view, year, monthOfYear, dayOfMonth) -> {
+                    // Action effectuée quand l'utilisateur valide une date
+                    // On formate la date proprement : JJ/MM/AAAA
+                    String dateSelectionnee = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, (monthOfYear + 1), year);
+                    editText.setText(dateSelectionnee); // On met le texte dans la case
+                },
+                annee, mois, jour); // On donne les valeurs initiales
+
+        datePickerDialog.show(); // On affiche le calendrier
     }
 }
