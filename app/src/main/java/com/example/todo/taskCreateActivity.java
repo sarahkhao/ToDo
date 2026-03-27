@@ -2,10 +2,11 @@ package com.example.todo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
-import java.util.Date;
 
 public class taskCreateActivity extends AppCompatActivity {
 
@@ -17,21 +18,36 @@ public class taskCreateActivity extends AppCompatActivity {
         EditText editIntitule = findViewById(R.id.editIntitule);
         EditText editDesc = findViewById(R.id.editDesc);
         EditText editContexte = findViewById(R.id.editContexte);
+        EditText editDateDebut = findViewById(R.id.editDateDebut);
+        EditText editDateFin = findViewById(R.id.editDateFin);
+        EditText editLienWeb = findViewById(R.id.editLienWebCreate);
+        Spinner spinnerStatus = findViewById(R.id.spinnerStatus);
         Button btnSauvegarder = findViewById(R.id.btnSauvegarder);
 
+        // Configuration du Spinner des statuts
+        String[] statuts = {"Pas commencée", "En cours", "Terminée"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, statuts);
+        spinnerStatus.setAdapter(adapter);
+
         btnSauvegarder.setOnClickListener(v -> {
-            String intitule = editIntitule.getText().toString();
-            String desc = editDesc.getText().toString();
-            String contexte = editContexte.getText().toString();
+            // Récupération de l'index du spinner (0, 1 ou 2) qui correspond parfaitement à notre logique de statut int
+            int status = spinnerStatus.getSelectedItemPosition();
 
-            // Création de l'objet (date et durée simplifiées pour l'exemple)
-            Tache laTache = new Tache(intitule, desc, 1.0f, new Date(), new Date(), 0, contexte, "");
+            Tache laTache = new Tache(
+                    editIntitule.getText().toString(),
+                    editDesc.getText().toString(),
+                    1.0f,
+                    editDateDebut.getText().toString(),
+                    editDateFin.getText().toString(),
+                    status,
+                    editContexte.getText().toString(),
+                    editLienWeb.getText().toString()
+            );
 
-            // Renvoi à l'activité appelante
             Intent resultIntent = new Intent();
             resultIntent.putExtra("NOUVELLE_TACHE", laTache);
             setResult(RESULT_OK, resultIntent);
-            finish(); // Ferme l'activité
+            finish();
         });
     }
 }

@@ -1,42 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nouvelle Tâche"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <EditText
-        android:id="@+id/editIntitule"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Intitulé de la tâche" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Nouvelle Tâche" android:textSize="24sp" android:textStyle="bold" android:layout_marginBottom="16dp"/>
 
-    <EditText
-        android:id="@+id/editDesc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Description"
-        android:minLines="3" />
+        <EditText android:id="@+id/editIntitule" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Intitulé" />
+        <EditText android:id="@+id/editDesc" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Description" />
+        <EditText android:id="@+id/editContexte" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Contexte" />
+        <EditText android:id="@+id/editDateDebut" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Date début (ex: 12/02/2024)" />
+        <EditText android:id="@+id/editDateFin" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Date fin (ex: 15/02/2024)" />
+        <EditText android:id="@+id/editLienWebCreate" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Lien Web (Optionnel)" android:inputType="textUri"/>
 
-    <EditText
-        android:id="@+id/editContexte"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Contexte (ex: Bureau, Maison...)" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Statut :" android:layout_marginTop="8dp"/>
+        <Spinner android:id="@+id/spinnerStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp"/>
 
-    <Button
-        android:id="@+id/btnSauvegarder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Sauvegarder" />
+        <Button android:id="@+id/btnSauvegarder" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sauvegarder" />
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

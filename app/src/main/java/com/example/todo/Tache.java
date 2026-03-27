@@ -13,9 +13,9 @@ public class Tache implements Serializable {
     private String contexte;
     private String lienWeb;
 
-    public Tache(String intitule, String desc, float duree, Date dateDebut, Date dateFin, int status, String contexte, String lienWeb) {
+    public Tache(String intitule, String description, float duree, Date dateDebut, Date dateFin, int status, String contexte, String lienWeb) {
         this.intitule = intitule;
-        this.description = desc;
+        this.description = description;
         this.duree = duree;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
@@ -88,8 +88,16 @@ public class Tache implements Serializable {
         this.lienWeb = lienWeb;
     }
 
+    public String getStatusString() {
+        switch (status) {
+            case 1: return "En cours";
+            case 2: return "Terminée";
+            default: return "Pas commencée";
+        }
+    }
+
     @Override
     public String toString() {
-        return intitule + " - " + contexte;
+        return intitule + " [" + getStatusString() + "] - " + contexte;
     }
 }

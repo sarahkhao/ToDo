@@ -1,5 +1,6 @@
 package com.example.todo;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -7,55 +8,120 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class taskListActivity extends AppCompatActivity {
 
-    private ArrayList<Tache> listTache;
+    private ArrayList<Tache> listTacheMaster; // La vraie liste complète (Base de données)
+    private ArrayList<Tache> listTacheAffichee; // La liste filtrée affichée à l'écran
     private ArrayAdapter<Tache> adapter;
     private static final int REQUEST_CODE_CREATE = 1;
+    private final String FICHIER_SAUVEGARDE = "mes_taches.dat";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task_list); // Assure-toi de créer ce fichier XML
+        setContentView(R.layout.activity_task_list);
 
-        listTache = new ArrayList<>();
+        // 1. Charger les données enregistrées
+        chargerDonnees();
+
+        listTacheAffichee = new ArrayList<>(listTacheMaster);
         ListView listView = findViewById(R.id.listViewTaches);
         Button btnAdd = findViewById(R.id.btnAjouterTache);
+        Spinner spinnerFiltre = findViewById(R.id.spinnerFiltre);
 
-        // Initialisation de l'adaptateur
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listTache);
+        // 2. Initialisation de la liste
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listTacheAffichee);
         listView.setAdapter(adapter);
 
-        // Clic sur un item : Afficher un Toast (TP 2) puis ouvrir la description (TP 3)
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            Tache task = listTache.get(position);
-            Toast.makeText(taskListActivity.this, "Tâche : " + task.getIntitule(), Toast.LENGTH_SHORT).show(); // [cite: 55]
+        // 3. Gestion du filtre
+        String[] filtres = {"Toutes", "Pas commencées", "En cours", "Terminées"};
+        spinnerFiltre.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, filtres));
 
-            Intent intent = new Intent(taskListActivity.this, taskDescActivity.class);
-            intent.putExtra("TACHE_SELECTIONNEE", task);
-            startActivity(intent); //
+        spinnerFiltre.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                appliquerFiltre(position - 1); // -1 = Toutes, 0 = Pas commencée, 1 = En cours, 2 = Terminée
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // Bouton pour créer une tâche
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Tache task = listTacheAffichee.get(position);
+            Intent intent = new Intent(taskListActivity.this, taskDescActivity.class);
+            intent.putExtra("TACHE_SELECTIONNEE", task);
+            startActivity(intent);
+        });
+
         btnAdd.setOnClickListener(v -> {
             Intent intent = new Intent(taskListActivity.this, taskCreateActivity.class);
-            startActivityForResult(intent, REQUEST_CODE_CREATE); //
+            startActivityForResult(intent, REQUEST_CODE_CREATE);
         });
     }
 
-    // Récupération des données renvoyées par taskCreateActivity
+    private void appliquerFiltre(int statusFiltre) {
+        listTacheAffichee.clear();
+        if (statusFiltre == -1) {
+            listTacheAffichee.addAll(listTacheMaster); // On affiche tout
+        } else {
+            for (Tache t : listTacheMaster) {
+                if (t.getStatus() == statusFiltre) {
+                    listTacheAffichee.add(t);
+                }
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CREATE && resultCode == RESULT_OK && data != null) {
             Tache nouvelleTache = (Tache) data.getSerializableExtra("NOUVELLE_TACHE");
-            listTache.add(nouvelleTache);
-            adapter.notifyDataSetChanged(); // Met à jour la liste
+            listTacheMaster.add(nouvelleTache);
+            sauvegarderDonnees(); // On sauvegarde dans le fichier !
+
+            // On remet le filtre à zéro pour voir la nouvelle tâche
+            Spinner spinnerFiltre = findViewById(R.id.spinnerFiltre);
+            spinnerFiltre.setSelection(0);
+            appliquerFiltre(-1);
+        }
+    }
+
+    // --- METHODES DE SAUVEGARDE EN FICHIER (BONUS) ---
+    private void sauvegarderDonnees() {
+        try {
+            FileOutputStream fos = openFileOutput(FICHIER_SAUVEGARDE, Context.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(listTacheMaster);
+            oos.close();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Erreur lors de la sauvegarde", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void chargerDonnees() {
+        try {
+            FileInputStream fis = openFileInput(FICHIER_SAUVEGARDE);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            listTacheMaster = (ArrayList<Tache>) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (Exception e) {
+            // Si le fichier n'existe pas encore (premier lancement)
+            listTacheMaster = new ArrayList<>();
         }
     }
 }
