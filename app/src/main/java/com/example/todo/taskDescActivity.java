@@ -6,56 +6,94 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class taskDescActivity extends AppCompatActivity {
+
+    private Tache tacheActuelle;
+    private int indexTache;
+
+    private TextView txtIntitule, txtStatus, txtContexte, txtDates, txtDesc;
+    private EditText editLienWeb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_desc);
 
-        // 1. On relie nos variables Java aux éléments de l'interface XML
-        TextView txtIntitule = findViewById(R.id.txtIntituleDesc);
-        TextView txtStatus = findViewById(R.id.txtStatusDesc);
-        TextView txtContexte = findViewById(R.id.txtContexteDesc);
-        TextView txtDates = findViewById(R.id.txtDatesDesc);
-        TextView txtDesc = findViewById(R.id.txtDescriptionDesc);
-        EditText editLienWeb = findViewById(R.id.editLienWeb);
+        txtIntitule = findViewById(R.id.txtIntituleDesc);
+        txtStatus = findViewById(R.id.txtStatusDesc);
+        txtContexte = findViewById(R.id.txtContexteDesc);
+        txtDates = findViewById(R.id.txtDatesDesc);
+        txtDesc = findViewById(R.id.txtDescriptionDesc);
+        editLienWeb = findViewById(R.id.editLienWeb);
         Button btnOuvrirLien = findViewById(R.id.btnOuvrirLien);
-        Button btnRetour = findViewById(R.id.btnRetour);
 
-        // 2. Récupération de la tâche envoyée par taskListActivity
-        Tache tache = (Tache) getIntent().getSerializableExtra("TACHE_SELECTIONNEE");
+        // Récupération des nouveaux boutons
+        Button btnModifier = findViewById(R.id.btnModifier);
+        Button btnSupprimer = findViewById(R.id.btnSupprimer);
 
-        // 3. Si on a bien reçu une tâche, on affiche ses informations
-        if (tache != null) {
-            txtIntitule.setText(tache.getIntitule());
-            txtStatus.setText("Statut : " + tache.getStatusString());
-            txtContexte.setText("Contexte : " + tache.getContexte());
-            txtDates.setText("Du " + tache.getDateDebut() + " au " + tache.getDateFin());
-            txtDesc.setText(tache.getDescription());
-            editLienWeb.setText(tache.getLienWeb());
-        }
+        // On récupère la tâche ET son index
+        tacheActuelle = (Tache) getIntent().getSerializableExtra("TACHE_SELECTIONNEE");
+        indexTache = getIntent().getIntExtra("INDEX_TACHE", -1);
 
-        // 4. Gestion du bouton d'ouverture du lien Web (TP 4)
+        afficherDetailsTache();
+
         btnOuvrirLien.setOnClickListener(v -> {
-            // On récupère le texte dans le champ lien web et on enlève les espaces en trop
             String url = editLienWeb.getText().toString().trim();
-
-            // Si le champ est vide, on affiche une erreur avec un Toast
             if (url.isEmpty()) {
-                Toast.makeText(taskDescActivity.this, "Erreur : Aucun lien web défini pour cette tâche.", Toast.LENGTH_LONG).show();
+                Toast.makeText(taskDescActivity.this, "Erreur : Aucun lien web défini.", Toast.LENGTH_LONG).show();
             } else {
-                // Sinon, on lance la WebActivity en lui passant l'URL
                 Intent intent = new Intent(taskDescActivity.this, WebActivity.class);
                 intent.putExtra("URL_WEB", url);
                 startActivity(intent);
             }
         });
 
-        btnRetour.setOnClickListener(v -> {
-            finish(); // Cette méthode ferme l'activité actuelle et revient à la précédente
+        // --- ACTION : SUPPRIMER LA TÂCHE ---
+        btnSupprimer.setOnClickListener(v -> {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("ACTION", "SUPPRIMER");
+            returnIntent.putExtra("INDEX_TACHE", indexTache); // On renvoie l'index pour supprimer la bonne
+            setResult(RESULT_OK, returnIntent);
+            finish(); // Ferme la description et retourne à la liste
         });
+
+        // --- ACTION : MODIFIER LA TÂCHE ---
+        btnModifier.setOnClickListener(v -> {
+            Intent intent = new Intent(taskDescActivity.this, taskCreateActivity.class);
+            intent.putExtra("TACHE_A_MODIFIER", tacheActuelle); // On envoie la tâche actuelle au formulaire
+            startActivityForResult(intent, 2); // Code 2 = Modification
+        });
+    }
+
+    // Méthode séparée pour mettre à jour les textes à l'écran
+    private void afficherDetailsTache() {
+        if (tacheActuelle != null) {
+            txtIntitule.setText(tacheActuelle.getIntitule());
+            txtStatus.setText("Statut : " + tacheActuelle.getStatusString());
+            txtContexte.setText("Contexte : " + tacheActuelle.getContexte());
+            txtDates.setText("Du " + tacheActuelle.getDateDebut() + " au " + tacheActuelle.getDateFin());
+            txtDesc.setText(tacheActuelle.getDescription());
+            editLienWeb.setText(tacheActuelle.getLienWeb());
+        }
+    }
+
+    // On réceptionne la tâche une fois qu'elle a été modifiée dans le formulaire
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2 && resultCode == RESULT_OK && data != null) {
+            tacheActuelle = (Tache) data.getSerializableExtra("NOUVELLE_TACHE");
+            afficherDetailsTache(); // Met à jour l'écran de description
+
+            // On prévient taskListActivity qu'il y a eu une modification pour qu'elle sauvegarde
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("ACTION", "MODIFIER");
+            returnIntent.putExtra("INDEX_TACHE", indexTache);
+            returnIntent.putExtra("TACHE_MODIFIEE", tacheActuelle);
+            setResult(RESULT_OK, returnIntent);
+        }
     }
 }

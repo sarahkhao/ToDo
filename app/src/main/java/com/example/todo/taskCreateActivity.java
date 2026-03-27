@@ -38,6 +38,18 @@ public class taskCreateActivity extends AppCompatActivity {
         editDateDebut.setOnClickListener(v -> afficherCalendrier(editDateDebut));
         editDateFin.setOnClickListener(v -> afficherCalendrier(editDateFin));
 
+        Tache tacheAModifier = (Tache) getIntent().getSerializableExtra("TACHE_A_MODIFIER");
+        if (tacheAModifier != null) {
+            editIntitule.setText(tacheAModifier.getIntitule());
+            editDesc.setText(tacheAModifier.getDescription());
+            editContexte.setText(tacheAModifier.getContexte());
+            editDateDebut.setText(tacheAModifier.getDateDebut());
+            editDateFin.setText(tacheAModifier.getDateFin());
+            editLienWeb.setText(tacheAModifier.getLienWeb());
+            spinnerStatus.setSelection(tacheAModifier.getStatus());
+
+            btnSauvegarder.setText("Mettre à jour");
+        }
         btnSauvegarder.setOnClickListener(v -> {
             int status = spinnerStatus.getSelectedItemPosition();
 

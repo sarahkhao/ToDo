@@ -58,9 +58,13 @@ public class taskListActivity extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Tache task = listTacheAffichee.get(position);
+            // Très important : On cherche l'index de cette tâche dans la base de données complète
+            int indexInMaster = listTacheMaster.indexOf(task);
+
             Intent intent = new Intent(taskListActivity.this, taskDescActivity.class);
             intent.putExtra("TACHE_SELECTIONNEE", task);
-            startActivity(intent);
+            intent.putExtra("INDEX_TACHE", indexInMaster); // On passe l'index
+            startActivityForResult(intent, 2); // 2 = Code pour ouvrir une description
         });
 
         btnAdd.setOnClickListener(v -> {
@@ -86,15 +90,39 @@ public class taskListActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Spinner spinnerFiltre = findViewById(R.id.spinnerFiltre); // On récupère le filtre actuel
+
+        // 1. Retour de la CRÉATION d'une nouvelle tâche
         if (requestCode == REQUEST_CODE_CREATE && resultCode == RESULT_OK && data != null) {
             Tache nouvelleTache = (Tache) data.getSerializableExtra("NOUVELLE_TACHE");
             listTacheMaster.add(nouvelleTache);
-            sauvegarderDonnees(); // On sauvegarde dans le fichier !
+            sauvegarderDonnees();
 
-            // On remet le filtre à zéro pour voir la nouvelle tâche
-            Spinner spinnerFiltre = findViewById(R.id.spinnerFiltre);
             spinnerFiltre.setSelection(0);
             appliquerFiltre(-1);
+            Toast.makeText(this, "Tâche créée avec succès", Toast.LENGTH_SHORT).show();
+        }
+
+        // 2. Retour de la DESCRIPTION (Modification ou Suppression)
+        if (requestCode == 2 && resultCode == RESULT_OK && data != null) {
+            String action = data.getStringExtra("ACTION");
+            int index = data.getIntExtra("INDEX_TACHE", -1);
+
+            if (index != -1 && action != null) {
+                if (action.equals("SUPPRIMER")) {
+                    listTacheMaster.remove(index); // On retire la tâche de la liste
+                    Toast.makeText(this, "Tâche supprimée", Toast.LENGTH_SHORT).show();
+                } else if (action.equals("MODIFIER")) {
+                    Tache tacheModifiee = (Tache) data.getSerializableExtra("TACHE_MODIFIEE");
+                    listTacheMaster.set(index, tacheModifiee); // On remplace l'ancienne par la nouvelle
+                    Toast.makeText(this, "Tâche mise à jour", Toast.LENGTH_SHORT).show();
+                }
+                sauvegarderDonnees(); // On sauvegarde dans le fichier .dat
+
+                // On réapplique le filtre sélectionné pour que la liste visuelle se mette à jour
+                appliquerFiltre(spinnerFiltre.getSelectedItemPosition() - 1);
+            }
         }
     }
 
