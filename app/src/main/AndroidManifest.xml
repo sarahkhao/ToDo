@@ -25,6 +25,7 @@
         <activity android:name=".taskCreateActivity" />
         <activity android:name=".taskDescActivity" />
         <activity android:name=".WebActivity" />
+        <activity android:name=".ColorSettingsActivity" />
 
     </application>
 

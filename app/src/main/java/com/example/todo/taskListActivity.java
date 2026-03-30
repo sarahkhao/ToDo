@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -22,7 +23,7 @@ public class taskListActivity extends AppCompatActivity {
 
     private ArrayList<Tache> listTacheMaster; // La vraie liste complète (Base de données)
     private ArrayList<Tache> listTacheAffichee; // La liste filtrée affichée à l'écran
-    private ArrayAdapter<Tache> adapter;
+    private TacheAdapter adapter;
     private static final int REQUEST_CODE_CREATE = 1;
     private final String FICHIER_SAUVEGARDE = "mes_taches.dat";
 
@@ -38,9 +39,12 @@ public class taskListActivity extends AppCompatActivity {
         ListView listView = findViewById(R.id.listViewTaches);
         Button btnAdd = findViewById(R.id.btnAjouterTache);
         Spinner spinnerFiltre = findViewById(R.id.spinnerFiltre);
+        ImageButton btnSettings = findViewById(R.id.btnSettings);
 
         // 2. Initialisation de la liste
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listTacheAffichee);
+       // adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listTacheAffichee);
+        //listView.setAdapter(adapter);
+        adapter = new TacheAdapter(this, listTacheAffichee);
         listView.setAdapter(adapter);
 
         // 3. Gestion du filtre
@@ -70,6 +74,12 @@ public class taskListActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(v -> {
             Intent intent = new Intent(taskListActivity.this, taskCreateActivity.class);
             startActivityForResult(intent, REQUEST_CODE_CREATE);
+        });
+
+        btnSettings.setOnClickListener(v -> {
+            // On lance l'activité de réglages que nous avons créée tout à l'heure
+            Intent intent = new Intent(taskListActivity.this, ColorSettingsActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -150,6 +160,15 @@ public class taskListActivity extends AppCompatActivity {
         } catch (Exception e) {
             // Si le fichier n'existe pas encore (premier lancement)
             listTacheMaster = new ArrayList<>();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Cette ligne dit à l'adapter : "Les données ou les préférences ont changé, redessine tout !"
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
         }
     }
 }

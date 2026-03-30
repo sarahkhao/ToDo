@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Faites glisser pour choisir"
+        android:layout_marginBottom="10dp"/>
+
+    <ImageView
+        android:id="@+id/colorSpectrum"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/spectrum_image"
+        android:scaleType="fitCenter"/>
+
+    <View
+        android:id="@+id/colorPreview"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="#000000"/>
+</LinearLayout>
